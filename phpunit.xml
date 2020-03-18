@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/7.5/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         forceCoversAnnotation="true"
+         beStrictAboutCoversAnnotation="true"
+         beStrictAboutOutputDuringTests="true"
+         beStrictAboutTodoAnnotatedTests="true"
+         verbose="true">
+    <testsuites>
+        <testsuite name="default">
+            <directory suffix="Test.php">tests</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src</directory>
+        </whitelist>
+    </filter>
+    <php>
+        <env name="NYLAS_CLIENT_ID" value="4kscord1dknqpcb3jjuzawv2c" force="true"/>
+        <env name="NYLAS_CLIENT_SECRET" value="cc1lij5y32mqr8qc2onf6o635" force="true"/>
+        <env name="NYLAS_ACCESS_TOKEN" value="" force="true"/>
+        <env name="NYLAS_SERVER" value="https://api.nylas.com" force="true"/>
+        <env name="NYLAS_NAME" value="Ethan" force="true"/>
+        <env name="NYLAS_EMAIL" value="ethan@agmagency.com" force="true"/>
+
+        <env name="NYLAS_GOOGLE_CLIENT_ID" value="139640920297-ru21mdriggbne4kjtk8k8idr6fr2l0g9.apps.googleusercontent.com" force="true"/>
+        <env name="NYLAS_GOOGLE_CLIENT_SECRET" value="BDmtEGxCQDEFNlK3zG6_rn5Q" force="true"/>
+        <env name="NYLAS_GOOGLE_REFRESH_TOKEN" value="ethan@agmagency.com" force="true"/>
+    </php>
+</phpunit>
