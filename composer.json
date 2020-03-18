@@ -1,5 +1,5 @@
 {
-    "name": "Co-Foundry/nylas",
+    "name": "foundry/nylas-php-sdk",
     "type": "project",
     "version": "0.0.1",
     "description": "SDK for Nylas 2.0",
