@@ -3,21 +3,19 @@
 namespace Nylas\Services;
 
 use Nylas\Exceptions\Exception;
+use Nylas\Resources\Account as AccountResource;
 
 class Account extends Service
 {
     const URI = '/account';
 
     /**
-     * Get one webhook
-     *
-     * @param $id
-     * @return mixed
+     * @return AccountResource
      * @throws Exception
      */
     public function getAccount()
     {
-        return $this->nylas->call(self::URI);
+        return new AccountResource($this->request()->withBearerTokenAuth()->setPath(self::URI)->get()->toJson());
     }
 
 }

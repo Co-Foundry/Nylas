@@ -4,6 +4,7 @@ namespace Nylas;
 
 use GuzzleHttp\Client as GuzzleClient;
 use Nylas\Exceptions\Exception;
+use Nylas\Services\Account;
 use Nylas\Services\Delta;
 use Nylas\Services\Files;
 use Nylas\Services\Messages;
@@ -20,6 +21,7 @@ use Nylas\Services\Webhooks;
  * @method Messages Messages()
  * @method Send Send()
  * @method Files Files()
+ * @method Account Account()
  *
  * @author Greg Gunner <greg@co-foundry.co.za>
  * @package Nylas

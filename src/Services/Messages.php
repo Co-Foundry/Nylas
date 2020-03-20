@@ -35,7 +35,7 @@ class Messages extends Service
      * Get a message
      *
      * @param $id
-     * @return mixed
+     * @return Message
      * @throws Exception
      */
     public function getMessage($id)
