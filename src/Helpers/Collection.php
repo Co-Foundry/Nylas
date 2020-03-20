@@ -1,35 +1,24 @@
 <?php
 
-
 namespace Nylas\Helpers;
 
-use Nylas\Client;
 use Nylas\Exceptions\Exception;
+use Nylas\Request;
 
 /**
- * Class Collection
+ * Collection
  *
  * A collection is an API wrapper for fetching a series of results from the api, such as a list of users or products
  *
+ * @author Greg Gunner <greg@co-foundry.co.za>
  * @package Nylas\Helpers
  */
 class Collection
 {
-
     /**
-     * @var int The size of the results to return
+     * @var Request
      */
-    private $chunk_size = 50;
-
-    /**
-     * @var Client
-     */
-    protected $client;
-
-    /**
-     * @var string The path to call for this collection
-     */
-    protected $path;
+    protected $request;
 
     /**
      * @var string
@@ -43,35 +32,62 @@ class Collection
 
     /**
      * Collection constructor.
-     * @param Client $client The client to use
-     * @param string $path The url path to call
+     * @param Request $request A request object
      * @param string $resource The Resource class to return the items returned by the API
      */
-    public function __construct(Client $client, string $path, string $resource)
+    public function __construct(Request $request, string $resource)
     {
-        $this->client = $client;
-        $this->path = $path;
+        $this->request = $request;
         $this->resource = $resource;
     }
 
     /**
+     * Get the items
+     *
+     * This will continue to call the api until either there are not more items in the set, or
+     * the set has been reached
+     *
      * @param int $offset
+     * @param int $limit
      * @return \Generator
      * @throws Exception
      */
-    public function items($offset = 0)
+    public function items($offset = 0, $limit = 50)
     {
         while (true) {
-            $items = $this->call($offset, $this->chunk_size);
+            $items = $this->get($offset, $limit)->toJson();
             if (empty($items)) {
                 break;
             }
             foreach ($items as $item) {
-                yield new ($this->resource)($item);
+                yield $this->toResource($item);
             }
-            if (count($items) < $this->chunk_size) {
-                break;
-            }
+            break;
+        }
+    }
+
+    /**
+     * Converts the given data to the collection resource
+     *
+     * @param $item
+     * @return mixed
+     */
+    public function toResource($item)
+    {
+        return new $this->resource($item);
+    }
+
+    /**
+     * @return null
+     * @throws Exception
+     */
+    public function first()
+    {
+        $item = $this->get(0, 1)->toJson();
+        if (!empty($item)) {
+            return new $this->resource($item);
+        } else {
+            return null;
         }
     }
 
@@ -92,16 +108,23 @@ class Collection
      *
      * @param int $offset
      * @param int $limit
-     * @return mixed
+     * @return Request
      * @throws Exception
      */
-    protected function call($offset, $limit)
+    protected function get($offset, $limit)
     {
         $filters = array_merge($this->filters, [
             'limit' => $limit,
             'offset' => $offset
         ]);
+        return $this->request->setParams($filters)->call();
+    }
 
-        return $this->client->call($this->path, 'GET', $filters);
+    /**
+     * @return Request
+     */
+    public function getRequest(): Request
+    {
+        return $this->request;
     }
 }

@@ -17,7 +17,7 @@ class Account extends Service
      */
     public function getAccount()
     {
-        return $this->client->call(self::URI);
+        return $this->nylas->call(self::URI);
     }
 
 }

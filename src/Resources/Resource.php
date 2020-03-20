@@ -12,9 +12,15 @@ abstract class Resource
 
     protected $cast = [];
 
-    public function __construct($data)
+    /**
+     * Resource constructor.
+     * @param array|null $data
+     */
+    public function __construct($data = [])
     {
-        $this->fill($data);
+        if ($data) {
+            $this->fill($data);
+        }
     }
 
     public function fill($data)
@@ -38,10 +44,20 @@ abstract class Resource
         if (isset($this->cast[$name])) {
             Cast::type($value, $this->cast[$name]);
         }
-        $this->data[$name] = $value;
+        $method = 'set' . ucfirst($name);
+        if (method_exists($this, $method)) {
+            call_user_func([$this, $method], $value);
+        } else {
+            $this->data[$name] = $value;
+        }
     }
 
     public function toArray(){
         return $this->data;
+    }
+
+    static function collection()
+    {
+
     }
 }

@@ -10,7 +10,7 @@ class BaseTestCase extends TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->client = new \Nylas\Client($_ENV['NYLAS_CLIENT_ID'], $_ENV['NYLAS_CLIENT_SECRET'], $_ENV['NYLAS_ACCESS_TOKEN']);
+        $this->client = new \Nylas\Nylas($_ENV['NYLAS_CLIENT_ID'], $_ENV['NYLAS_CLIENT_SECRET'], $_ENV['NYLAS_ACCESS_TOKEN']);
     }
 
 }

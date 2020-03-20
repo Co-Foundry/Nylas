@@ -4,13 +4,19 @@ namespace Nylas\Services;
 
 use Nylas\Exceptions\Exception;
 use Nylas\Helpers\Collection;
+use Nylas\Request;
 use Nylas\Resources\Webhook;
-use Nylas\Services\Service;
 
+/**
+ * Class Webhooks
+ *
+ * @author Greg Gunner <greg@co-foundry.co.za>
+ * @package Nylas\Services
+ */
 class Webhooks extends Service
 {
-    const URI_ALL = '/webhooks';
-    const URI_ONE = '/webhooks/{id}';
+    const PATH_WEBHOOKS = '/webhooks';
+    const PATH_WEBHOOK = '/webhooks/{id}';
 
     /**
      * Get all webhooks
@@ -18,9 +24,12 @@ class Webhooks extends Service
      * @param array $filters
      * @return Collection
      */
-    public function find($filters = [])
+    public function getWebhooks($filters = [])
     {
-        return (new Collection($this->client, Webhook::class, self::URI_ALL))->where($filters);
+        return (new Collection(
+            $this->request()->setPath(sprintf(self::PATH_WEBHOOKS)),
+            Webhook::class)
+        )->where($filters);
     }
 
     /**
@@ -30,9 +39,11 @@ class Webhooks extends Service
      * @return mixed
      * @throws Exception
      */
-    public function read($id)
+    public function getWebhook($id)
     {
-        return new Webhook($this->client->call(sprintf(self::URI_ONE, $id)));
+        return new Webhook(
+            $this->request()->setPath(sprintf(self::PATH_WEBHOOK, $id))->get()->toJson()
+        );
     }
 
     /**
@@ -44,13 +55,18 @@ class Webhooks extends Service
      * @return mixed
      * @throws Exception
      */
-    public function create(string $callback_url, array $triggers, string $state)
+    public function createWebhook(string $callback_url, array $triggers, string $state)
     {
-        return new Webhook($this->client->call(self::URI_ALL, 'POST', [
-            'callback_url' => $callback_url,
-            'triggers' => $triggers,
-            'state' => $state
-        ]));
+        return new Webhook(
+            $this->request()
+                ->setPath(self::PATH_WEBHOOKS)
+                ->post([
+                    'callback_url' => $callback_url,
+                    'triggers' => $triggers,
+                    'state' => $state
+                ])
+                ->toJson()
+        );
     }
 
     /**
@@ -61,23 +77,41 @@ class Webhooks extends Service
      * @return mixed
      * @throws Exception
      */
-    public function update($id, $state)
+    public function updateWebhook($id, $state)
     {
-        return new Webhook($this->client->call(sprintf(self::URI_ONE, $id), 'POST', [
-            'state' => $state
-        ]));
+        return new Webhook(
+            $this->request()
+                ->setPath(sprintf(self::PATH_WEBHOOK, $id))
+                ->put([
+                    'state' => $state
+                ])
+                ->toJson()
+        );
     }
 
     /**
      * Delete a webhook
      *
      * @param string|integer $id
-     * @return mixed
+     * @return boolean
      * @throws Exception
      */
-    public function delete($id)
+    public function deleteWebhook($id)
     {
-        $this->client->call(sprintf(self::URI_ONE, $id), 'DELETE');
-        return true;
+        return $this->request()
+            ->setPath(sprintf(self::PATH_WEBHOOK, $id))
+            ->delete()
+            ->isSuccess()
+        ;
+    }
+
+    /**
+     * Modify the request to include the client id
+     *
+     * @return Request
+     */
+    protected function request()
+    {
+        return parent::request()->withClientId();
     }
 }

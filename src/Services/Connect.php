@@ -12,7 +12,7 @@ class Connect extends Service
     public function authorize(string $name, string $email, string $provider, array $settings, array $scopes)
     {
         $args = array(
-            "client_id" => $this->client->getClientId(),
+            "client_id" => $this->nylas->getClientId(),
             "name" => $name,
             "email" => $email,
             "provider" => $provider,
@@ -20,7 +20,7 @@ class Connect extends Service
             "scopes" => implode(',', $scopes)
         );
 
-        return $this->client->call(self::URI_AUTH, 'POST', $args);
+        return $this->nylas->call(self::URI_AUTH, 'POST', $args);
     }
 
     /**
@@ -33,10 +33,10 @@ class Connect extends Service
     public function getToken($code)
     {
         $args = [
-            "client_id" => $this->client->getClientId(),
-            "client_secret" => $this->client->getClientSecret(),
+            "client_id" => $this->nylas->getClientId(),
+            "client_secret" => $this->nylas->getClientSecret(),
             'code' => $code
         ];
-        return $this->client->call(static::URI_TOKEN, 'POST', $args);
+        return $this->nylas->call(static::URI_TOKEN, 'POST', $args);
     }
 }
